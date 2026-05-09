@@ -1,0 +1,747 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--p:#1a56db;--ps:#1e429f;--pa:#dbeafe;--pt:#1e3a5f;
+--s:#0891b2;--sa:#cffafe;
+--ok:#059669;--oka:#d1fae5;--okt:#064e3b;
+--warn:#d97706;--warna:#fef3c7;--warnt:#78350f;
+--err:#dc2626;--erra:#fee2e2;--errt:#7f1d1d;
+--bg:var(--color-background-primary);
+--bg2:var(--color-background-secondary);
+--bg3:var(--color-background-tertiary);
+--txt:var(--color-text-primary);
+--txt2:var(--color-text-secondary);
+--bdr:var(--color-border-tertiary);
+--bdr2:var(--color-border-secondary);
+--r:var(--border-radius-md);--rl:var(--border-radius-lg);
+}
+body{font-family:var(--font-sans);font-size:14px;color:var(--txt);background:transparent}
+.app{display:flex;flex-direction:column;min-height:600px;background:var(--bg3);border-radius:var(--rl);overflow:hidden;border:0.5px solid var(--bdr)}
+.topbar{background:var(--bg);border-bottom:0.5px solid var(--bdr);padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:15px;font-weight:500;color:var(--txt)}
+.topbar-sub{font-size:11px;color:var(--txt2);margin-top:1px}
+.avatar{width:32px;height:32px;border-radius:50%;background:#1a56db;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+.content{flex:1;overflow-y:auto;padding:12px}
+.bottomnav{background:var(--bg);border-top:0.5px solid var(--bdr);display:flex;padding:6px 0}
+.navbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border:none;background:none;cursor:pointer;color:var(--txt2);font-size:10px;font-family:var(--font-sans);border-radius:var(--r);transition:.15s}
+.navbtn.active{color:var(--p)}
+.navbtn i{font-size:20px}
+.screen{display:none}.screen.active{display:block}
+
+/* Cards */
+.card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--rl);padding:14px;margin-bottom:10px}
+.card-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.card-title{font-size:13px;font-weight:500}
+.card-sub{font-size:12px;color:var(--txt2)}
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.stat{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--r);padding:10px 12px}
+.stat-num{font-size:22px;font-weight:500;margin-bottom:2px}
+.stat-label{font-size:11px;color:var(--txt2)}
+.stat.blue .stat-num{color:var(--p)}
+.stat.green .stat-num{color:var(--ok)}
+.stat.amber .stat-num{color:var(--warn)}
+.stat.red .stat-num{color:var(--err)}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.badge.green{background:var(--oka);color:var(--okt)}
+.badge.amber{background:var(--warna);color:var(--warnt)}
+.badge.red{background:var(--erra);color:var(--errt)}
+.badge.blue{background:var(--pa);color:var(--pt)}
+
+/* List items */
+.list-item{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--r);padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:.1s}
+.list-item:hover{background:var(--bg2)}
+.list-item-left{}
+.list-item-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.list-item-sub{font-size:11px;color:var(--txt2)}
+
+/* Section headers */
+.section-header{font-size:11px;font-weight:500;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px}
+
+/* Progress bar */
+.prog-bar{height:6px;border-radius:4px;background:var(--bg2);overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;border-radius:4px;background:var(--p);transition:.3s}
+.prog-fill.amber{background:var(--warn)}
+.prog-fill.red{background:var(--err)}
+
+/* Forms */
+.field{margin-bottom:10px}
+.field label{display:block;font-size:12px;color:var(--txt2);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:8px 10px;border:0.5px solid var(--bdr2);border-radius:var(--r);background:var(--bg);color:var(--txt);font-size:13px;font-family:var(--font-sans)}
+.field textarea{resize:vertical;min-height:70px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);border:0.5px solid var(--bdr2);background:var(--bg);color:var(--txt);font-size:13px;cursor:pointer;font-family:var(--font-sans);transition:.15s;font-weight:500}
+.btn:hover{background:var(--bg2)}
+.btn.primary{background:var(--p);color:#fff;border-color:var(--p)}
+.btn.primary:hover{background:var(--ps)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.btn.danger{background:var(--err);color:#fff;border-color:var(--err)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* Alert bar */
+.alert{border-radius:var(--r);padding:8px 12px;margin-bottom:8px;font-size:12px;display:flex;align-items:center;gap:8px}
+.alert.warn{background:var(--warna);color:var(--warnt);border:0.5px solid var(--warn)}
+.alert.err{background:var(--erra);color:var(--errt);border:0.5px solid var(--err)}
+.alert.ok{background:var(--oka);color:var(--okt);border:0.5px solid var(--ok)}
+
+/* Tab bar */
+.tabs{display:flex;gap:4px;margin-bottom:12px;background:var(--bg2);border-radius:var(--r);padding:3px}
+.tab{flex:1;text-align:center;padding:5px 6px;border-radius:calc(var(--r) - 2px);font-size:12px;cursor:pointer;color:var(--txt2);border:none;background:none;font-family:var(--font-sans);transition:.15s}
+.tab.active{background:var(--bg);color:var(--txt);font-weight:500;box-shadow:0 0.5px 2px rgba(0,0,0,.08)}
+
+/* Chart mini */
+.mini-chart{display:flex;align-items:flex-end;gap:4px;height:60px;margin-top:8px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar-fill{width:100%;border-radius:3px 3px 0 0;background:var(--p);opacity:.8;min-height:2px;transition:.3s}
+.bar-label{font-size:9px;color:var(--txt2)}
+
+/* Modal overlay (non-fixed) */
+.modal-wrap{min-height:400px;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;border-radius:var(--rl);margin-bottom:10px;padding:12px}
+.modal{background:var(--bg);border-radius:var(--rl);padding:16px;width:100%;max-width:340px;border:0.5px solid var(--bdr2)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.modal-title{font-size:15px;font-weight:500}
+.close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--txt2);line-height:1;padding:2px}
+
+/* Stock level indicator */
+.stock-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--bdr)}
+.stock-row:last-child{border-bottom:none}
+.stock-icon{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stock-info{flex:1;min-width:0}
+.stock-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stock-qty{font-size:11px;color:var(--txt2)}
+
+/* Timeline */
+.timeline{padding-left:20px;border-left:1.5px solid var(--bdr);margin-left:8px}
+.tl-item{position:relative;margin-bottom:12px;padding-left:14px}
+.tl-dot{position:absolute;left:-9.5px;top:3px;width:8px;height:8px;border-radius:50%;background:var(--p);border:1.5px solid var(--bg)}
+.tl-title{font-size:13px;font-weight:500;margin-bottom:1px}
+.tl-time{font-size:11px;color:var(--txt2)}
+
+.role-tag{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--pa);color:var(--pt);font-weight:500}
+.divider{height:0.5px;background:var(--bdr);margin:10px 0}
+.login-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:480px;padding:24px}
+.login-logo{width:52px;height:52px;background:var(--p);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.login-logo i{font-size:28px;color:#fff}
+.login-title{font-size:20px;font-weight:500;margin-bottom:4px;text-align:center}
+.login-sub{font-size:13px;color:var(--txt2);text-align:center;margin-bottom:24px}
+.login-form{width:100%;max-width:300px}
+.otp-row{display:flex;gap:8px;margin:8px 0}
+.otp-input{flex:1;text-align:center;padding:10px;font-size:18px;border:0.5px solid var(--bdr2);border-radius:var(--r);background:var(--bg);color:var(--txt);font-family:var(--font-mono)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;background:var(--bg2);border:0.5px solid var(--bdr);margin:2px}
+</style>
+
+<h2 class="sr-only">Purchase and Store Management App — interactive mobile prototype with login, dashboard, indents, purchase orders, GRN, store management, and reports modules</h2>
+
+<div class="app" id="app">
+
+<!-- TOP BAR -->
+<div class="topbar" id="topbar">
+  <div>
+    <div class="topbar-title" id="topbar-title">ProcureX</div>
+    <div class="topbar-sub" id="topbar-sub">Store & Purchase Management</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="btn sm" onclick="showAlerts()" style="padding:5px 8px" id="bell-btn">
+      <i class="ti ti-bell" aria-hidden="true"></i>
+      <span style="font-size:10px;background:var(--err);color:#fff;padding:1px 5px;border-radius:20px;margin-left:-2px">3</span>
+    </button>
+    <div class="avatar" id="user-avatar">SK</div>
+  </div>
+</div>
+
+<!-- SCREENS -->
+<div class="content" id="main-content">
+
+<!-- LOGIN -->
+<div class="screen active" id="screen-login">
+  <div class="login-wrap">
+    <div class="login-logo"><i class="ti ti-building-factory-2" aria-hidden="true"></i></div>
+    <div class="login-title">ProcureX</div>
+    <div class="login-sub">Manufacturing Store & Purchase</div>
+    <div class="login-form">
+      <div class="field">
+        <label>Mobile / Email</label>
+        <input type="text" value="+91 98765 43210" id="login-mobile"/>
+      </div>
+      <div id="otp-section" style="display:none">
+        <div style="font-size:12px;color:var(--txt2);margin-bottom:6px">Enter OTP sent to your mobile</div>
+        <div class="otp-row">
+          <input class="otp-input" type="text" maxlength="1" value="4"/>
+          <input class="otp-input" type="text" maxlength="1" value="2"/>
+          <input class="otp-input" type="text" maxlength="1" value="1"/>
+          <input class="otp-input" type="text" maxlength="1" value="9"/>
+        </div>
+      </div>
+      <div class="field" id="role-field">
+        <label>Login as</label>
+        <select id="role-select">
+          <option value="storekeeper">Store Keeper</option>
+          <option value="purchase">Purchase Manager</option>
+          <option value="production">Production User</option>
+          <option value="admin">Admin</option>
+          <option value="management">Management Viewer</option>
+        </select>
+      </div>
+      <button class="btn primary" style="width:100%;justify-content:center;margin-bottom:10px" onclick="sendOtp()" id="otp-btn">
+        <i class="ti ti-device-mobile" aria-hidden="true"></i> Send OTP
+      </button>
+      <button class="btn" style="width:100%;justify-content:center" onclick="loginDemo()" id="login-btn" style="display:none">
+        <i class="ti ti-login" aria-hidden="true"></i> Verify & Login
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="screen" id="screen-dashboard">
+  <div class="section-header">Today's Overview</div>
+  <div class="stat-grid">
+    <div class="stat blue"><div class="stat-num" id="s-indents">12</div><div class="stat-label">Pending Indents</div></div>
+    <div class="stat amber"><div class="stat-num" id="s-approvals">5</div><div class="stat-label">Awaiting Approval</div></div>
+    <div class="stat red"><div class="stat-num" id="s-lowstock">8</div><div class="stat-label">Low Stock Items</div></div>
+    <div class="stat green"><div class="stat-num" id="s-grn">3</div><div class="stat-label">GRNs Today</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-row">
+      <span class="card-title">Monthly Purchase Summary</span>
+      <span class="badge blue">May 2026</span>
+    </div>
+    <div style="margin-top:8px;display:flex;justify-content:space-between">
+      <div><div style="font-size:11px;color:var(--txt2)">Total POs</div><div style="font-size:18px;font-weight:500;color:var(--p)">₹24.6L</div></div>
+      <div><div style="font-size:11px;color:var(--txt2)">Received</div><div style="font-size:18px;font-weight:500;color:var(--ok)">₹18.2L</div></div>
+      <div><div style="font-size:11px;color:var(--txt2)">Pending</div><div style="font-size:18px;font-weight:500;color:var(--warn)">₹6.4L</div></div>
+    </div>
+    <div class="mini-chart" id="mini-chart"></div>
+    <div style="font-size:10px;color:var(--txt2);margin-top:2px;text-align:center">Last 6 months</div>
+  </div>
+
+  <div class="section-header">Low Stock Alerts</div>
+  <div class="card" style="padding:10px 14px">
+    <div class="stock-row">
+      <div class="stock-icon" style="background:var(--erra)"><i class="ti ti-box" style="font-size:14px;color:var(--err)" aria-hidden="true"></i></div>
+      <div class="stock-info"><div class="stock-name">MS Flat Bar 50x6mm</div><div class="stock-qty">4 Kg — Min: 50 Kg</div></div>
+      <span class="badge red">Critical</span>
+    </div>
+    <div class="stock-row">
+      <div class="stock-icon" style="background:var(--warna)"><i class="ti ti-box" style="font-size:14px;color:var(--warn)" aria-hidden="true"></i></div>
+      <div class="stock-info"><div class="stock-name">Hex Bolt M10x40</div><div class="stock-qty">150 Nos — Min: 500 Nos</div></div>
+      <span class="badge amber">Low</span>
+    </div>
+    <div class="stock-row">
+      <div class="stock-icon" style="background:var(--erra)"><i class="ti ti-box" style="font-size:14px;color:var(--err)" aria-hidden="true"></i></div>
+      <div class="stock-info"><div class="stock-name">Welding Rod E7018</div><div class="stock-qty">2 Kg — Min: 20 Kg</div></div>
+      <span class="badge red">Critical</span>
+    </div>
+  </div>
+
+  <div class="section-header">Today's Activity</div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">GRN #GRN-2026-0512 created</div><div class="tl-time">10:24 AM · Vendor: Sharma Traders</div></div>
+    <div class="tl-item"><div class="tl-dot" style="background:var(--ok)"></div><div class="tl-title">PO #PO-2026-0198 approved</div><div class="tl-time">09:45 AM · ₹1,24,500</div></div>
+    <div class="tl-item"><div class="tl-dot" style="background:var(--warn)"></div><div class="tl-title">Indent #IND-2026-0342 pending</div><div class="tl-time">09:10 AM · Production Dept.</div></div>
+    <div class="tl-item"><div class="tl-dot" style="background:var(--err)"></div><div class="tl-title">Low stock alert triggered</div><div class="tl-time">08:30 AM · 3 items below reorder</div></div>
+  </div>
+</div>
+
+<!-- INDENT -->
+<div class="screen" id="screen-indent">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this,'ind-list')" data-target="ind-list">My Indents</button>
+    <button class="tab" onclick="switchTab(this,'ind-new')" data-target="ind-new">New Indent</button>
+    <button class="tab" onclick="switchTab(this,'ind-approve')" data-target="ind-approve">Approvals</button>
+  </div>
+
+  <div id="ind-list">
+    <div class="alert warn"><i class="ti ti-alert-circle" aria-hidden="true"></i>5 indents pending approval</div>
+    <div class="list-item" onclick="sendPrompt('Show details for indent IND-2026-0342')">
+      <div class="list-item-left">
+        <div class="list-item-title">IND-2026-0342</div>
+        <div class="list-item-sub">Production Dept · 3 items · Today</div>
+      </div>
+      <span class="badge amber">Pending</span>
+    </div>
+    <div class="list-item" onclick="sendPrompt('Show details for indent IND-2026-0338')">
+      <div class="list-item-left">
+        <div class="list-item-title">IND-2026-0338</div>
+        <div class="list-item-sub">Maintenance · 5 items · Yesterday</div>
+      </div>
+      <span class="badge blue">In Review</span>
+    </div>
+    <div class="list-item" onclick="sendPrompt('Show details for indent IND-2026-0330')">
+      <div class="list-item-left">
+        <div class="list-item-title">IND-2026-0330</div>
+        <div class="list-item-sub">Quality Dept · 2 items · 3 days ago</div>
+      </div>
+      <span class="badge green">PO Created</span>
+    </div>
+    <div class="list-item" onclick="sendPrompt('Show details for indent IND-2026-0325')">
+      <div class="list-item-left">
+        <div class="list-item-title">IND-2026-0325</div>
+        <div class="list-item-sub">Production · 8 items · 5 days ago</div>
+      </div>
+      <span class="badge green">Approved</span>
+    </div>
+  </div>
+
+  <div id="ind-new" style="display:none">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px">Create Purchase Requisition</div>
+      <div class="field"><label>Department</label><select><option>Production</option><option>Maintenance</option><option>Quality</option><option>Admin</option></select></div>
+      <div class="field"><label>Priority</label><select><option>Normal</option><option>Urgent</option></select></div>
+      <div class="field"><label>Required By Date</label><input type="date" value="2026-05-20"/></div>
+      <div class="field"><label>Remarks</label><textarea placeholder="Reason for requisition..."></textarea></div>
+      <div class="divider"></div>
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px">Items</div>
+      <div class="card" style="background:var(--bg2);border-style:dashed">
+        <div class="field"><label>Item Name</label><input type="text" placeholder="Search item code / name..."/></div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+          <div class="field"><label>Qty</label><input type="number" value="100"/></div>
+          <div class="field"><label>Unit</label><select><option>Kg</option><option>Nos</option><option>Meter</option><option>Litre</option></select></div>
+        </div>
+      </div>
+      <button class="btn" style="width:100%;justify-content:center;margin-top:4px;border-style:dashed"><i class="ti ti-plus" aria-hidden="true"></i> Add Item</button>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn primary" style="flex:1;justify-content:center"><i class="ti ti-send" aria-hidden="true"></i> Submit Indent</button>
+        <button class="btn" style="flex:1;justify-content:center"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Draft</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="ind-approve" style="display:none">
+    <div class="section-header">Pending Your Approval</div>
+    <div class="card" style="margin-bottom:8px">
+      <div class="card-row">
+        <span class="card-title">IND-2026-0342</span>
+        <span class="badge amber">Urgent</span>
+      </div>
+      <div class="card-sub" style="margin-bottom:8px">Production Dept · Suresh Kumar · 3 items</div>
+      <div style="font-size:12px;margin-bottom:10px">MS Flat Bar 50×6mm (200 Kg), Welding Rod E7018 (50 Kg), Grinding Disc 4" (100 Nos)</div>
+      <div class="btn-row">
+        <button class="btn primary" style="flex:1;justify-content:center" onclick="approveIndent()"><i class="ti ti-check" aria-hidden="true"></i> Approve</button>
+        <button class="btn danger" style="flex:1;justify-content:center" onclick="rejectIndent()"><i class="ti ti-x" aria-hidden="true"></i> Reject</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PO SCREEN -->
+<div class="screen" id="screen-po">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this,'po-list')" data-target="po-list">PO List</button>
+    <button class="tab" onclick="switchTab(this,'po-create')" data-target="po-create">Create PO</button>
+    <button class="tab" onclick="switchTab(this,'po-grn')" data-target="po-grn">GRN</button>
+  </div>
+
+  <div id="po-list">
+    <div class="stat-grid" style="margin-bottom:10px">
+      <div class="stat blue"><div class="stat-num">18</div><div class="stat-label">Open POs</div></div>
+      <div class="stat green"><div class="stat-num">42</div><div class="stat-label">Closed POs</div></div>
+    </div>
+    <div class="list-item" onclick="showPODetail()">
+      <div class="list-item-left">
+        <div class="list-item-title">PO-2026-0198</div>
+        <div class="list-item-sub">Sharma Traders · ₹1,24,500 · 3 items</div>
+      </div>
+      <span class="badge amber">Partial</span>
+    </div>
+    <div class="list-item" onclick="sendPrompt('Show PO details for PO-2026-0195')">
+      <div class="list-item-left">
+        <div class="list-item-title">PO-2026-0195</div>
+        <div class="list-item-sub">Gupta Hardware · ₹68,200 · 5 items</div>
+      </div>
+      <span class="badge blue">Sent</span>
+    </div>
+    <div class="list-item" onclick="sendPrompt('Show PO details for PO-2026-0191')">
+      <div class="list-item-left">
+        <div class="list-item-title">PO-2026-0191</div>
+        <div class="list-item-sub">Steel World · ₹2,18,000 · 8 items</div>
+      </div>
+      <span class="badge green">Received</span>
+    </div>
+  </div>
+
+  <div id="po-detail-modal" style="display:none">
+    <div class="modal-wrap">
+      <div class="modal">
+        <div class="modal-header">
+          <span class="modal-title">PO-2026-0198</span>
+          <button class="close-btn" onclick="hidePODetail()">×</button>
+        </div>
+        <div style="font-size:12px;color:var(--txt2);margin-bottom:10px">Sharma Traders · Created: 05 May 2026</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+          <span class="chip"><i class="ti ti-currency-rupee" style="font-size:12px" aria-hidden="true"></i>1,24,500</span>
+          <span class="chip">GST: 18%</span>
+          <span class="chip">Payment: Net 30</span>
+          <span class="badge amber">Partial GRN</span>
+        </div>
+        <div class="divider"></div>
+        <div style="font-size:12px;font-weight:500;margin:8px 0 6px">Items</div>
+        <div style="font-size:12px;margin-bottom:4px;display:flex;justify-content:space-between"><span>MS Flat Bar 50×6mm</span><span style="color:var(--ok)">200/200 Kg ✓</span></div>
+        <div style="font-size:12px;margin-bottom:4px;display:flex;justify-content:space-between"><span>Welding Rod E7018</span><span style="color:var(--warn)">30/50 Kg</span></div>
+        <div style="font-size:12px;margin-bottom:12px;display:flex;justify-content:space-between"><span>Grinding Disc 4"</span><span style="color:var(--txt2)">0/100 Nos</span></div>
+        <div class="btn-row">
+          <button class="btn primary sm" onclick="sendPrompt('Generate PDF for PO-2026-0198')"><i class="ti ti-file-text" aria-hidden="true"></i> PDF PO</button>
+          <button class="btn sm" onclick="showGRN()"><i class="ti ti-truck-delivery" aria-hidden="true"></i> Create GRN</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="po-create" style="display:none">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px">New Purchase Order</div>
+      <div class="field"><label>PO Number (Auto)</label><input type="text" value="PO-2026-0199" readonly style="background:var(--bg2)"/></div>
+      <div class="field"><label>Vendor</label><select><option>Sharma Traders</option><option>Gupta Hardware</option><option>Steel World</option></select></div>
+      <div class="field"><label>Reference Indent</label><input type="text" placeholder="IND-2026-0342"/></div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+        <div class="field"><label>Discount %</label><input type="number" value="2"/></div>
+        <div class="field"><label>Freight ₹</label><input type="number" value="500"/></div>
+      </div>
+      <div class="field"><label>GST Rate</label><select><option>18%</option><option>12%</option><option>5%</option></select></div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Subtotal</span><span>₹1,18,000</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;color:var(--txt2)"><span>Discount (2%)</span><span>-₹2,360</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;color:var(--txt2)"><span>Freight</span><span>+₹500</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;color:var(--txt2)"><span>GST (18%)</span><span>+₹20,916</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:500;padding-top:8px;border-top:0.5px solid var(--bdr)"><span>Total</span><span style="color:var(--p)">₹1,37,056</span></div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn primary" style="flex:1;justify-content:center"><i class="ti ti-send" aria-hidden="true"></i> Submit for Approval</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="po-grn" style="display:none">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px">Goods Receipt Note</div>
+      <div class="field"><label>GRN Number (Auto)</label><input type="text" value="GRN-2026-0513" readonly style="background:var(--bg2)"/></div>
+      <div class="field"><label>PO Reference</label><select><option>PO-2026-0198 · Sharma Traders</option><option>PO-2026-0195 · Gupta Hardware</option></select></div>
+      <div class="field"><label>Vendor Invoice No.</label><input type="text" placeholder="INV/2026/4521"/></div>
+      <div class="field"><label>Vehicle / Challan No.</label><input type="text" placeholder="CH-8821"/></div>
+      <div class="divider"></div>
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px">Item Receipt</div>
+      <div class="card" style="background:var(--bg2)">
+        <div style="font-size:12px;font-weight:500;margin-bottom:6px">Welding Rod E7018</div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+          <div class="field"><label>PO Qty</label><input type="number" value="50" readonly style="background:var(--bg3)"/></div>
+          <div class="field"><label>Received Qty</label><input type="number" value="20"/></div>
+          <div class="field"><label>Accepted Qty</label><input type="number" value="20"/></div>
+          <div class="field"><label>Rejected Qty</label><input type="number" value="0"/></div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:8px"><label>Upload Invoice / Challan</label>
+        <button class="btn" style="width:100%;justify-content:center"><i class="ti ti-upload" aria-hidden="true"></i> Attach Document</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" style="flex:1;justify-content:center" onclick="saveGRN()"><i class="ti ti-check" aria-hidden="true"></i> Save GRN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STORE SCREEN -->
+<div class="screen" id="screen-store">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this,'st-stock')" data-target="st-stock">Stock</button>
+    <button class="tab" onclick="switchTab(this,'st-issue')" data-target="st-issue">Issue</button>
+    <button class="tab" onclick="switchTab(this,'st-items')" data-target="st-items">Items</button>
+  </div>
+
+  <div id="st-stock">
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <input type="text" placeholder="Search item..." style="flex:1;padding:8px 10px;border:0.5px solid var(--bdr2);border-radius:var(--r);background:var(--bg);color:var(--txt);font-size:13px"/>
+      <button class="btn sm"><i class="ti ti-qrcode" aria-hidden="true"></i></button>
+      <button class="btn sm"><i class="ti ti-filter" aria-hidden="true"></i></button>
+    </div>
+    <div class="card" style="padding:10px">
+      <div class="card-row"><span class="card-title">Current Stock Levels</span><span class="badge blue">142 items</span></div>
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:6px;padding:0 2px"><span>Item</span><span>Stock / Reorder</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500">MS Flat Bar 50×6mm</div><div class="prog-bar"><div class="prog-fill red" style="width:8%"></div></div></div>
+          <div style="font-size:11px;white-space:nowrap;color:var(--err)">4/50 Kg</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500">Hex Bolt M10×40</div><div class="prog-bar"><div class="prog-fill amber" style="width:30%"></div></div></div>
+          <div style="font-size:11px;white-space:nowrap;color:var(--warn)">150/500</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500">Welding Rod E7018</div><div class="prog-bar"><div class="prog-fill red" style="width:10%"></div></div></div>
+          <div style="font-size:11px;white-space:nowrap;color:var(--err)">2/20 Kg</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500">SS Sheet 2mm</div><div class="prog-bar"><div class="prog-fill" style="width:75%"></div></div></div>
+          <div style="font-size:11px;white-space:nowrap;color:var(--txt2)">450/200</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500">Grinding Disc 4"</div><div class="prog-bar"><div class="prog-fill" style="width:60%"></div></div></div>
+          <div style="font-size:11px;white-space:nowrap;color:var(--txt2)">60/100</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn sm" style="flex:1;justify-content:center" onclick="sendPrompt('Start physical stock verification')"><i class="ti ti-clipboard-check" aria-hidden="true"></i> Stock Verify</button>
+      <button class="btn sm" style="flex:1;justify-content:center" onclick="sendPrompt('Show stock transfer form')"><i class="ti ti-transfer" aria-hidden="true"></i> Transfer</button>
+      <button class="btn sm" style="flex:1;justify-content:center" onclick="sendPrompt('Show stock adjustment form')"><i class="ti ti-adjustments" aria-hidden="true"></i> Adjust</button>
+    </div>
+  </div>
+
+  <div id="st-issue" style="display:none">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px">Material Issue / Return</div>
+      <div class="tabs" style="margin-bottom:12px">
+        <button class="tab active" onclick="this.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">Issue</button>
+        <button class="tab" onclick="this.parentNode.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">Return</button>
+      </div>
+      <div class="field"><label>Issue No. (Auto)</label><input type="text" value="MIS-2026-0298" readonly style="background:var(--bg2)"/></div>
+      <div class="field"><label>Department / Job</label><select><option>Production — Job#J4521</option><option>Maintenance</option><option>Quality</option></select></div>
+      <div class="field"><label>Issued To (Person)</label><input type="text" placeholder="Employee name..."/></div>
+      <div class="divider"></div>
+      <div class="field"><label>Item</label><input type="text" placeholder="Scan QR or type item..."/></div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+        <div class="field"><label>Quantity</label><input type="number" value="5"/></div>
+        <div class="field"><label>Unit</label><input type="text" value="Kg" readonly style="background:var(--bg2)"/></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt2);margin-bottom:10px"><span>Available Stock</span><span style="color:var(--ok)">120 Kg</span></div>
+      <button class="btn primary" style="width:100%;justify-content:center" onclick="issueItem()"><i class="ti ti-arrow-right" aria-hidden="true"></i> Issue Material</button>
+    </div>
+  </div>
+
+  <div id="st-items" style="display:none">
+    <div class="card">
+      <div class="card-row"><span class="card-title">Item Master</span><button class="btn sm primary" onclick="sendPrompt('Add new item to master')"><i class="ti ti-plus" aria-hidden="true"></i> Add</button></div>
+      <div class="divider"></div>
+      <div class="list-item" style="margin:6px 0;border-radius:var(--r)" onclick="sendPrompt('Edit item ITM-0042 MS Flat Bar')">
+        <div class="list-item-left">
+          <div class="list-item-title">ITM-0042 · MS Flat Bar 50×6mm</div>
+          <div class="list-item-sub">Rack A3 · Bin 12 · Steel</div>
+        </div>
+        <i class="ti ti-chevron-right" style="color:var(--txt2)" aria-hidden="true"></i>
+      </div>
+      <div class="list-item" style="margin:6px 0;border-radius:var(--r)" onclick="sendPrompt('Edit item ITM-0043 Hex Bolt')">
+        <div class="list-item-left">
+          <div class="list-item-title">ITM-0043 · Hex Bolt M10×40</div>
+          <div class="list-item-sub">Rack B1 · Bin 4 · Fasteners</div>
+        </div>
+        <i class="ti ti-chevron-right" style="color:var(--txt2)" aria-hidden="true"></i>
+      </div>
+      <div class="list-item" style="margin:6px 0;border-radius:var(--r)" onclick="sendPrompt('Edit item ITM-0044 SS Sheet')">
+        <div class="list-item-left">
+          <div class="list-item-title">ITM-0044 · SS Sheet 2mm</div>
+          <div class="list-item-sub">Rack C2 · Bin 1 · Steel</div>
+        </div>
+        <i class="ti ti-chevron-right" style="color:var(--txt2)" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPORTS SCREEN -->
+<div class="screen" id="screen-reports">
+  <div class="section-header">Reports & Analytics</div>
+
+  <div class="stat-grid" style="margin-bottom:12px">
+    <div class="stat blue"><div class="stat-num">₹24.6L</div><div class="stat-label">Month Purchase</div></div>
+    <div class="stat green"><div class="stat-num">98.2%</div><div class="stat-label">GRN Accuracy</div></div>
+  </div>
+
+  <div class="section-header">Available Reports</div>
+  <div class="list-item" onclick="sendPrompt('Generate Stock Ledger report for May 2026')">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;border-radius:var(--r);background:var(--pa);display:flex;align-items:center;justify-content:center"><i class="ti ti-clipboard-list" style="font-size:16px;color:var(--p)" aria-hidden="true"></i></div>
+      <div class="list-item-left"><div class="list-item-title">Stock Ledger</div><div class="list-item-sub">All item movements — inward/outward</div></div>
+    </div>
+    <i class="ti ti-download" style="color:var(--txt2)" aria-hidden="true"></i>
+  </div>
+  <div class="list-item" onclick="sendPrompt('Generate Item Consumption report')">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;border-radius:var(--r);background:var(--oka);display:flex;align-items:center;justify-content:center"><i class="ti ti-chart-bar" style="font-size:16px;color:var(--ok)" aria-hidden="true"></i></div>
+      <div class="list-item-left"><div class="list-item-title">Item Consumption</div><div class="list-item-sub">Dept-wise usage analysis</div></div>
+    </div>
+    <i class="ti ti-download" style="color:var(--txt2)" aria-hidden="true"></i>
+  </div>
+  <div class="list-item" onclick="sendPrompt('Generate Purchase History report')">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;border-radius:var(--r);background:var(--warna);display:flex;align-items:center;justify-content:center"><i class="ti ti-receipt" style="font-size:16px;color:var(--warn)" aria-hidden="true"></i></div>
+      <div class="list-item-left"><div class="list-item-title">Purchase History</div><div class="list-item-sub">PO, vendor & rate history</div></div>
+    </div>
+    <i class="ti ti-download" style="color:var(--txt2)" aria-hidden="true"></i>
+  </div>
+  <div class="list-item" onclick="sendPrompt('Generate Vendor-wise report')">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;border-radius:var(--r);background:var(--sa);display:flex;align-items:center;justify-content:center"><i class="ti ti-users" style="font-size:16px;color:var(--s)" aria-hidden="true"></i></div>
+      <div class="list-item-left"><div class="list-item-title">Vendor-wise Report</div><div class="list-item-sub">Performance & rating</div></div>
+    </div>
+    <i class="ti ti-download" style="color:var(--txt2)" aria-hidden="true"></i>
+  </div>
+  <div class="list-item" onclick="sendPrompt('Generate Dead Stock report')">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;border-radius:var(--r);background:var(--erra);display:flex;align-items:center;justify-content:center"><i class="ti ti-box-off" style="font-size:16px;color:var(--err)" aria-hidden="true"></i></div>
+      <div class="list-item-left"><div class="list-item-title">Dead Stock Report</div><div class="list-item-sub">No movement in 90+ days</div></div>
+    </div>
+    <i class="ti ti-download" style="color:var(--txt2)" aria-hidden="true"></i>
+  </div>
+
+  <div class="section-header">Export Format</div>
+  <div class="btn-row">
+    <button class="btn" style="flex:1;justify-content:center" onclick="sendPrompt('Export report as Excel')"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Excel</button>
+    <button class="btn" style="flex:1;justify-content:center" onclick="sendPrompt('Export report as PDF')"><i class="ti ti-file-text" aria-hidden="true"></i> PDF</button>
+  </div>
+</div>
+
+<!-- ALERTS PANEL -->
+<div class="screen" id="screen-alerts">
+  <div class="section-header">Active Alerts</div>
+  <div class="alert err"><i class="ti ti-alert-triangle" aria-hidden="true"></i><div><div style="font-weight:500">Critical Low Stock</div>MS Flat Bar 50×6mm — 4 Kg remaining (Min: 50 Kg)</div></div>
+  <div class="alert err"><i class="ti ti-alert-triangle" aria-hidden="true"></i><div><div style="font-weight:500">Critical Low Stock</div>Welding Rod E7018 — 2 Kg remaining (Min: 20 Kg)</div></div>
+  <div class="alert warn"><i class="ti ti-alert-circle" aria-hidden="true"></i><div><div style="font-weight:500">Low Stock Warning</div>Hex Bolt M10×40 — 150 Nos (Min: 500 Nos)</div></div>
+  <div class="alert warn"><i class="ti ti-clock" aria-hidden="true"></i><div><div style="font-weight:500">Pending Approval</div>5 indents awaiting approval for 2+ days</div></div>
+  <div class="alert warn"><i class="ti ti-truck" aria-hidden="true"></i><div><div style="font-weight:500">Late Delivery</div>PO-2026-0191 — Steel World — overdue by 3 days</div></div>
+  <div class="section-header" style="margin-top:14px">Notification Settings</div>
+  <div class="card">
+    <div class="card-row" style="margin-bottom:12px"><span class="card-title">Alert Preferences</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:13px">Low stock alerts</span>
+      <div style="width:36px;height:20px;background:var(--ok);border-radius:20px;position:relative;cursor:pointer"><div style="width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;right:2px;top:2px"></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:13px">Approval reminders</span>
+      <div style="width:36px;height:20px;background:var(--ok);border-radius:20px;position:relative;cursor:pointer"><div style="width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;right:2px;top:2px"></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:13px">Delivery delay alerts</span>
+      <div style="width:36px;height:20px;background:var(--ok);border-radius:20px;position:relative;cursor:pointer"><div style="width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;right:2px;top:2px"></div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end content -->
+
+<!-- BOTTOM NAV -->
+<div class="bottomnav" id="bottomnav" style="display:none">
+  <button class="navbtn active" id="nav-dashboard" onclick="navigate('dashboard')"><i class="ti ti-dashboard" aria-hidden="true"></i><span>Home</span></button>
+  <button class="navbtn" id="nav-indent" onclick="navigate('indent')"><i class="ti ti-file-plus" aria-hidden="true"></i><span>Indents</span></button>
+  <button class="navbtn" id="nav-po" onclick="navigate('po')"><i class="ti ti-shopping-cart" aria-hidden="true"></i><span>PO / GRN</span></button>
+  <button class="navbtn" id="nav-store" onclick="navigate('store')"><i class="ti ti-building-warehouse" aria-hidden="true"></i><span>Store</span></button>
+  <button class="navbtn" id="nav-reports" onclick="navigate('reports')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>Reports</span></button>
+</div>
+
+</div>
+
+<script>
+const roleData={
+  storekeeper:{name:'Store Keeper',initials:'SK',title:'Store Keeper'},
+  purchase:{name:'Purchase Manager',initials:'PM',title:'Purchase Mgr'},
+  production:{name:'Production User',initials:'PU',title:'Production'},
+  admin:{name:'Admin',initials:'AD',title:'Admin'},
+  management:{name:'Mgmt Viewer',initials:'MV',title:'Mgmt Viewer'}
+};
+let currentRole='storekeeper';
+let isLoggedIn=false;
+
+function sendOtp(){
+  const otpSection=document.getElementById('otp-section');
+  const otpBtn=document.getElementById('otp-btn');
+  const loginBtn=document.getElementById('login-btn');
+  const roleField=document.getElementById('role-field');
+  otpSection.style.display='block';
+  otpBtn.style.display='none';
+  loginBtn.style.display='flex';
+  loginBtn.innerHTML='<i class="ti ti-login" aria-hidden="true"></i> Verify & Login';
+}
+
+function loginDemo(){
+  currentRole=document.getElementById('role-select').value;
+  const rd=roleData[currentRole];
+  document.getElementById('user-avatar').textContent=rd.initials;
+  document.getElementById('topbar-title').textContent='ProcureX · '+rd.title;
+  document.getElementById('topbar-sub').textContent='Manufacturing Store & Purchase';
+  document.getElementById('bottomnav').style.display='flex';
+  isLoggedIn=true;
+  buildChart();
+  navigate('dashboard');
+}
+
+function navigate(screen){
+  if(!isLoggedIn)return;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+screen).classList.add('active');
+  const navBtn=document.getElementById('nav-'+screen);
+  if(navBtn)navBtn.classList.add('active');
+  document.getElementById('po-detail-modal').style.display='none';
+  const titleMap={dashboard:'Dashboard',indent:'Purchase Indents',po:'PO & GRN',store:'Store Management',reports:'Reports',alerts:'Alerts'};
+  document.getElementById('topbar-sub').textContent=titleMap[screen]||'';
+}
+
+function showAlerts(){
+  if(!isLoggedIn)return;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-alerts').classList.add('active');
+  document.getElementById('topbar-sub').textContent='Alerts & Notifications';
+}
+
+function switchTab(btn,targetId){
+  const tabs=btn.closest('.tabs');
+  tabs.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const screen=btn.closest('.screen');
+  const allTargets=screen.querySelectorAll('[id]');
+  allTargets.forEach(t=>{
+    if(t.classList.contains('tabs'))return;
+    if(['ind-list','ind-new','ind-approve','po-list','po-create','po-grn','st-stock','st-issue','st-items'].includes(t.id)){
+      t.style.display='none';
+    }
+  });
+  document.getElementById(targetId).style.display='block';
+}
+
+function showPODetail(){document.getElementById('po-detail-modal').style.display='block';}
+function hidePODetail(){document.getElementById('po-detail-modal').style.display='none';}
+function showGRN(){
+  hidePODetail();
+  const tabs=document.getElementById('screen-po').querySelectorAll('.tab');
+  tabs[2].click();
+}
+
+function approveIndent(){
+  const card=event.target.closest('.card');
+  card.innerHTML='<div class="alert ok"><i class="ti ti-check" aria-hidden="true"></i><div><div style="font-weight:500">Indent Approved</div>IND-2026-0342 has been approved. PO will be created.</div></div>';
+  document.getElementById('s-approvals').textContent='4';
+  document.getElementById('s-indents').textContent='11';
+}
+
+function rejectIndent(){
+  const card=event.target.closest('.card');
+  card.innerHTML='<div class="alert err"><i class="ti ti-x" aria-hidden="true"></i><div><div style="font-weight:500">Indent Rejected</div>IND-2026-0342 has been rejected and returned to requester.</div></div>';
+  document.getElementById('s-approvals').textContent='4';
+}
+
+function saveGRN(){
+  const btn=event.target.closest('.btn');
+  btn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i> GRN Saved!';
+  btn.style.background=getComputedStyle(document.documentElement).getPropertyValue('--ok')||'#059669';
+  btn.style.color='#fff';
+  document.getElementById('s-grn').textContent='4';
+}
+
+function issueItem(){
+  const btn=event.target;
+  btn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i> Issued Successfully';
+  btn.disabled=true;
+  setTimeout(()=>{btn.innerHTML='<i class="ti ti-arrow-right" aria-hidden="true"></i> Issue Material';btn.disabled=false;},2500);
+}
+
+function buildChart(){
+  const months=['Dec','Jan','Feb','Mar','Apr','May'];
+  const values=[18,22,15,28,21,25];
+  const max=Math.max(...values);
+  const el=document.getElementById('mini-chart');
+  el.innerHTML=months.map((m,i)=>`<div class="bar-col">
+    <div class="bar-fill" style="height:${Math.round(values[i]/max*48)}px;background:${i===5?'var(--p)':'var(--pa)'};opacity:${i===5?1:0.6}"></div>
+    <span class="bar-label">${m}</span>
+  </div>`).join('');
+}
+</script>
